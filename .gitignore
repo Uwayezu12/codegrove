@@ -1,0 +1,93 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/.vinext/
+/out/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+next-env.d.ts
+/frontend/dist/
+/.wrangler/
+# Checkout-local execution profile and tool state; never publish them.
+/.sites-runtime/
+/.agents/
+/.codex/
+/outputs/
+/work/
+
+*.tsbuildinfo
+
+!.env.example
+/migration-private/
+
+/playwright-report/
+/test-results/
+
+# =========================================
+# Local CodeGrove development handoff files
+# Keep locally for Codex continuity
+# Never commit or push to GitHub
+# =========================================
+
+CODEGROVE_IMPLEMENTATION_STATUS.md
+CODEGROVE_FINAL_ACCEPTANCE.md
+SOURCE_FILE_MANIFEST*
+
+# Codex / local AI working files
+.codex/
+.codex-memory/
+CODEX.md
+
+# =========================================
+# Local secrets
+# =========================================
+
+.env
+.env.local
+.env.*.local
+
+# =========================================
+# Dependencies and generated output
+# =========================================
+
+node_modules/
+frontend/dist/
+playwright-report/
+test-results/
+
+# =========================================
+# OS / editor generated files
+# =========================================
+
+.DS_Store
+Thumbs.db

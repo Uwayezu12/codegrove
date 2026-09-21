@@ -1,0 +1,10 @@
+import 'dotenv/config';
+import {execFileSync} from 'node:child_process';
+import {existsSync} from 'node:fs';
+const url=process.env.TEST_DATABASE_URL;
+if(!url||!new URL(url).pathname.endsWith('_test'))throw new Error('TEST_DATABASE_URL must name a disposable MySQL database ending in _test.');
+if(!existsSync('frontend/dist/index.html'))throw new Error('Run npm run build before browser acceptance.');
+process.env.DATABASE_URL=url;process.env.PORT='3101';process.env.HOST='127.0.0.1';process.env.NODE_ENV='test';process.env.APP_ORIGINS='http://127.0.0.1:3101';process.env.TRUST_PROXY_HOPS='0';
+execFileSync(process.execPath,['node_modules/prisma/build/index.js','migrate','deploy'],{stdio:'inherit'});
+execFileSync(process.execPath,['--import','tsx','prisma/seed.ts'],{stdio:'inherit'});
+await import('../backend/server.js');

@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+model User {
+  id String @id @default(uuid()) @db.VarChar(191)
+  email String? @unique @db.VarChar(191)
+  name String @default("Imported learner") @db.VarChar(191)
+  passwordHash String? @map("password_hash") @db.VarChar(255)
+  legacyId String? @unique @map("legacy_id") @db.VarChar(191)
+  createdAt DateTime @default(now()) @map("created_at")
+  progress LearningProgress[]
+  sessions Session[]
+  @@map("users")
+}
+model Session {
+  tokenHash String @id @map("token_hash") @db.Char(64)
+  userId String @map("user_id") @db.VarChar(191)
+  expiresAt DateTime @map("expires_at")
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+model LearningProgress {
+  userId String @map("user_id") @db.VarChar(191)
+  kind String @db.VarChar(32)
+  item String @db.VarChar(191)
+  value Int @default(1)
+  updatedAt DateTime @map("updated_at")
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@id([userId,kind,item])
+  @@map("learning_progress")
+}
+model Topic {
+  id String @id @db.VarChar(191)
+  position Int
+  content Json
+  lessons Lesson[]
+  courses Course[]
+  @@map("topics")
+}
+model Lesson {
+  id String @id @db.VarChar(191)
+  topicId String @map("topic_id") @db.VarChar(191)
+  position Int
+  content Json
+  topic Topic @relation(fields:[topicId],references:[id])
+  courseLessons CourseLesson[]
+  @@map("lessons")
+}
+model Course {
+  id String @id @db.VarChar(191)
+  topicId String @map("topic_id") @db.VarChar(191)
+  position Int
+  content Json
+  topic Topic @relation(fields:[topicId],references:[id])
+  lessons CourseLesson[]
+  @@map("courses")
+}
+model CourseLesson {
+  courseId String @map("course_id") @db.VarChar(191)
+  lessonId String @map("lesson_id") @db.VarChar(191)
+  position Int
+  course Course @relation(fields:[courseId],references:[id],onDelete:Cascade)
+  lesson Lesson @relation(fields:[lessonId],references:[id])
+  @@id([courseId,lessonId])
+  @@unique([courseId,position])
+  @@map("course_lessons")
+}
+model Exercise {
+  id String @id @db.VarChar(191)
+  position Int
+  content Json
+  @@map("exercises")
+}
+model Quiz {
+  id String @id @db.VarChar(191)
+  questions Json
+  @@map("quizzes")
+}

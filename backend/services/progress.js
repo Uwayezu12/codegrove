@@ -1,0 +1,4 @@
+import {prisma} from '../config/prisma.js';
+export function readProgress(userId){return prisma.learningProgress.findMany({where:{userId},select:{kind:true,item:true,value:true},orderBy:{updatedAt:'desc'}});}
+export async function writeProgress(userId,{kind,item,value,remove}){if(remove)await prisma.learningProgress.deleteMany({where:{userId,kind,item}});else await prisma.learningProgress.upsert({where:{userId_kind_item:{userId,kind,item}},create:{userId,kind,item,value,updatedAt:new Date()},update:{value,updatedAt:new Date()}});return readProgress(userId);}
+export function validateProgress(body){if(!body||typeof body!=='object'||Array.isArray(body))return null;const {kind,item,value=1,remove=false}=body;if(!['bookmark','complete','enroll','solved','quiz'].includes(kind)||typeof item!=='string'||!item||item.length>191||!Number.isInteger(value)||value<0||value>100||typeof remove!=='boolean')return null;return {kind,item,value,remove};}

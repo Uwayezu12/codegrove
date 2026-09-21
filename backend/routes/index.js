@@ -1,0 +1,18 @@
+import {Router} from 'express';
+import {rateLimit} from 'express-rate-limit';
+import {authenticate,requireUser} from '../middleware/auth.js';
+import {register,login,logout,me} from '../controllers/auth.js';
+import {list,save} from '../controllers/progress.js';
+import {catalog} from '../services/catalog.js';
+import {prisma} from '../config/prisma.js';
+const router=Router();
+const authLimit=rateLimit({windowMs:15*60*1000,limit:30,standardHeaders:'draft-8',legacyHeaders:false,message:{error:'Too many sign-in attempts. Please try again later.'}});
+router.get('/health',async(req,res)=>{await prisma.$queryRaw`SELECT 1`;res.json({status:'ok',database:'mysql'});});
+router.get('/catalog',async(req,res)=>res.json(await catalog()));
+router.post('/auth/register',authLimit,register);
+router.post('/auth/login',authLimit,login);
+router.post('/auth/logout',logout);
+router.get('/auth/me',authenticate,me);
+router.get('/progress',authenticate,requireUser,list);
+router.post('/progress',authenticate,requireUser,save);
+export default router;

@@ -1,0 +1,42 @@
+{
+  "source": "CodeGrove Cloudflare D1 learning_progress",
+  "exportedAt": "2026-09-15",
+  "complete": true,
+  "rows": [
+    {
+      "user_id": "D90KfVlVp8ZrWqJnHAA5lstgMxNMtlFA0Ukl798RUN5IUtvGO4YI6I",
+      "kind": "bookmark",
+      "item": "js-variables",
+      "value": 1,
+      "updated_at": "2026-09-15T05:55:11.825Z"
+    },
+    {
+      "user_id": "D90KfVlVp8ZrWqJnHAA5lstgMxNMtlFA0Ukl798RUN5IUtvGO4YI6I",
+      "kind": "complete",
+      "item": "arrays",
+      "value": 1,
+      "updated_at": "2026-09-15T05:56:22.029Z"
+    },
+    {
+      "user_id": "D90KfVlVp8ZrWqJnHAA5lstgMxNMtlFA0Ukl798RUN5IUtvGO4YI6I",
+      "kind": "complete",
+      "item": "binary-search",
+      "value": 1,
+      "updated_at": "2026-09-15T05:57:47.560Z"
+    },
+    {
+      "user_id": "D90KfVlVp8ZrWqJnHAA5lstgMxNMtlFA0Ukl798RUN5IUtvGO4YI6I",
+      "kind": "complete",
+      "item": "stacks",
+      "value": 1,
+      "updated_at": "2026-09-15T05:57:58.367Z"
+    },
+    {
+      "user_id": "D90KfVlVp8ZrWqJnHAA5lstgMxNMtlFA0Ukl798RUN5IUtvGO4YI6I",
+      "kind": "enroll",
+      "item": "dsa-foundations",
+      "value": 1,
+      "updated_at": "2026-09-15T05:56:02.541Z"
+    }
+  ]
+}
