@@ -1,6 +1,6 @@
 # CodeGrove visible interaction audit
 
-Source reviewed 2026-09-21. Browser execution remains blocked by Work's ERR_BLOCKED_BY_CLIENT. This inventory maps all authored visible control categories, including controls repeated for catalog rows. Shared UI primitives are inspected where used, not counted as standalone product pages.
+Source reviewed and browser-verified 2026-09-23. The complete suite passed 15/15 across desktop, tablet, and mobile Chromium. This inventory maps all authored visible control categories, including controls repeated for catalog rows. Shared UI primitives are inspected where used, not counted as standalone product pages.
 
 | Surface | Controls | Source/API conclusion | Local browser coverage |
 | --- | --- | --- | --- |
@@ -28,4 +28,4 @@ Source reviewed 2026-09-21. Browser execution remains blocked by Work's ERR_BLOC
 
 Manual source review found no unused visible control, fake clickable card or placeholder action. Buttons without their own click handlers are either form submit buttons or stateful Radix controls; these are intentional. Input placeholder text and learning starter code are not placeholder functionality. Static sections/cards without click affordances remain explanatory content.
 
-Automated source checks are not a replacement for browser interaction or visual review. Browser cases are configured and discoverable but have not been executed in Work. Not every repeated accordion/lesson button is individually clicked by the browser suite; shared implementations and catalog relations are exhaustively source-checked, and representative controls are exercised in the local journey.
+Automated source checks are complemented by real-browser interaction and responsive review. All five interview accordions are exercised, every catalog route is loaded at desktop/tablet/mobile widths, all rendered anchors are source-validated, and representative repeated lesson/course/problem controls are exercised through shared implementations. The final browser run also rejects unexpected console errors, page errors, HTTP errors, and failed network requests.
