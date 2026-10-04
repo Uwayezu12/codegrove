@@ -1,7 +1,29 @@
 import {useState} from 'react';
-import {ArrowLeft,BookOpen,Check,Code2} from 'lucide-react';
+import {ArrowLeft,Code2,Mail,LockKeyhole,UserRound} from 'lucide-react';
 export default function AuthPage({mode,user}:{mode:string;user:{name:string;email:string}|null}){const signup=mode==='register',logout=mode==='signout-with-chatgpt';const [busy,setBusy]=useState(false);const [error,setError]=useState('');
 const raw=new URLSearchParams(location.search).get('return_to')||'/dashboard';let returnTo='/dashboard';try{const url=new URL(raw,location.origin);if(raw.startsWith('/')&&!raw.startsWith('//')&&url.origin===location.origin&&!['/signin','/register','/signout-with-chatgpt','/signin-with-chatgpt'].includes(url.pathname))returnTo=url.pathname+url.search;}catch{}
 async function submit(e:React.FormEvent<HTMLFormElement>){e.preventDefault();setBusy(true);setError('');const form=new FormData(e.currentTarget);try{const r=await fetch('/api/auth/'+(logout?'logout':signup?'register':'login'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:form.get('name'),email:form.get('email'),password:form.get('password')})});const d=await r.json();if(!r.ok)throw Error(d.error||'Could not sign in.');location.assign(logout?'/':returnTo);}catch(e){setError((e as Error).message);setBusy(false);}}
-return <main className="auth-shell"><section className="auth-intro"><a className="brand" href="/"><Code2 size={34}/><span>code<span>grove</span></span></a><div><span className="eyebrow">YOUR LEARNING, IN ONE PLACE</span><h2>Learn steadily.<br/>Build confidently.</h2><p>Save useful tutorials, follow structured courses, and keep your coding progress with you.</p><ul><li><Check size={17}/>Focused, practical lessons</li><li><Check size={17}/>JavaScript practice with instant feedback</li><li><Check size={17}/>Progress that persists across sessions</li></ul></div><small><BookOpen size={15}/> CodeGrove learning workspace</small></section><section className="auth-card-wrap"><a className="auth-back" href="/"><ArrowLeft size={16}/>Back to learning</a><form className="panel auth-form" onSubmit={submit}><span className="eyebrow green-text">{logout?'ACCOUNT':signup?'JOIN CODEGROVE':'WELCOME BACK'}</span><h1>{logout?'Sign out':signup?'Create your account':'Sign in to continue'}</h1><p>{logout?`Sign out of ${user?.email||'your account'}?`:'Keep your courses, saved lessons, and progress in one place.'}</p>{error&&<p role="alert" className="auth-error red-text">{error}</p>}{!logout&&<>{signup&&<label>Your name<input name="name" autoComplete="name" maxLength={100} required placeholder="Your name"/></label>}<label>Email address<input name="email" type="email" autoComplete="email" maxLength={191} required placeholder="you@example.com"/></label><label>Password<input name="password" type="password" autoComplete={signup?'new-password':'current-password'} minLength={12} maxLength={128} required placeholder="At least 12 characters"/></label><p className="muted">Use 12–128 characters for your password.</p></>}<button disabled={busy} className="primary">{busy?'Please wait…':logout?'Sign out':signup?'Create account':'Sign in'}</button>{!logout&&<a className="green-text auth-switch" href={(signup?'/signin':'/register')+'?return_to='+encodeURIComponent(returnTo)}>{signup?'Already have an account? Sign in':'New to CodeGrove? Create an account'}</a>}</form></section></main>;
+return <main className="auth-shell"><section className="auth-card-wrap">
+ <div className="auth-box">
+  <a className="brand auth-brand" href="/" aria-label="CodeGrove home"><Code2 size={44}/><span>code<span>grove</span></span></a>
+  {!logout&&<nav className="auth-tabs" aria-label="Authentication">
+   <a className={!signup?'active':''} aria-current={!signup?'page':undefined} href={'/signin?return_to='+encodeURIComponent(returnTo)}>Sign In</a>
+   <a className={signup?'active':''} aria-current={signup?'page':undefined} href={'/register?return_to='+encodeURIComponent(returnTo)}>Sign Up</a>
+  </nav>}
+  <form className="auth-form" onSubmit={submit} aria-busy={busy}>
+   <h1 className={!logout?'sr-only':undefined}>{logout?'Sign out':signup?'Create your account':'Sign in to continue'}</h1>
+   {logout&&<p>Sign out of {user?.email||'your account'}?</p>}
+   {error&&<p role="alert" className="auth-error red-text">{error}</p>}
+   {!logout&&<>
+    {signup&&<label><span className="sr-only">Your name</span><span className="auth-input"><UserRound size={20} aria-hidden="true"/><input name="name" autoComplete="name" maxLength={100} disabled={busy} required placeholder="Your name"/></span></label>}
+    <label><span className="sr-only">Email address</span><span className="auth-input"><Mail size={20} aria-hidden="true"/><input name="email" type="email" autoComplete="email" maxLength={191} disabled={busy} required placeholder="Email address"/></span></label>
+    <label><span className="sr-only">Password</span><span className="auth-input"><LockKeyhole size={20} aria-hidden="true"/><input name="password" type="password" autoComplete={signup?'new-password':'current-password'} minLength={12} maxLength={128} disabled={busy} required placeholder="Password" aria-describedby="password-help"/></span></label>
+    <p className="muted" id="password-help">Use 12–128 characters for your password.</p>
+   </>}
+   <button type="submit" disabled={busy} className="primary">{busy?'Please wait…':logout?'Sign out':signup?'Create account':'Sign in'}</button>
+   {!logout&&<p className="auth-note">Use your CodeGrove account to save lessons, enroll in courses, and keep your learning progress.</p>}
+  </form>
+ </div>
+ <a className="auth-back" href="/"><ArrowLeft size={16}/>Back to learning</a>
+</section></main>;
 }

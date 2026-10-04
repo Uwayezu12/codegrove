@@ -17,10 +17,11 @@ async function answerQuiz(page:Page){for(let i=0;i<questions.length;i++)await pa
 test('complete V1 journey with logout/login persistence',async({page})=>{
  const email=`browser-${randomUUID()}@example.test`,password=randomUUID()+randomUUID();
  await goto(page,'/');
- await page.getByRole('link',{name:'All tutorials',exact:true}).click();await expect(page).toHaveURL(/\/tutorials$/);
+ await page.locator('.footer-inner').getByRole('link',{name:'Tutorials',exact:true}).click();await expect(page).toHaveURL(/\/tutorials$/);
  await page.locator('.lesson-list a').filter({hasText:lesson.title}).click();await expect(page.getByRole('heading',{name:lesson.title,exact:true})).toBeVisible();
  await page.getByRole('link',{name:'Search',exact:true}).click();await page.getByRole('textbox',{name:'Search learning content'}).fill('arrays');await page.getByRole('button',{name:'Search',exact:true}).click();await expect(page).toHaveURL(/q=arrays/);await expect(page.locator('.lesson-list')).toContainText(lesson.title);
- await page.getByRole('link',{name:'Sign in',exact:true}).click();await page.getByRole('link',{name:'New to CodeGrove? Create an account'}).click();
+ if(await page.getByRole('button',{name:'Toggle navigation'}).isVisible())await page.getByRole('button',{name:'Toggle navigation'}).click();
+ await page.locator('header a:visible').filter({hasText:/^Sign in$/}).click();await page.getByRole('link',{name:'Sign Up',exact:true}).click();
  await page.getByLabel('Your name').fill('Browser acceptance learner');await page.getByLabel('Email address').fill(email);await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Create account',exact:true}).click();await expect(page).toHaveURL(/\/search\?q=arrays$/);await page.waitForLoadState('networkidle');
  await logout(page);await login(page,email,password);
  await goto(page,'/courses');await page.locator(`a[href="/courses/${course.id}"]`).first().click();await page.getByRole('button',{name:'Enroll for free'}).click();await expect(page.getByRole('button',{name:'Enrolled',exact:true})).toBeDisabled();
