@@ -15,7 +15,30 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   progress LearningProgress[]
   sessions Session[]
+  googleIdentity GoogleIdentity?
+  googleLinkAttempts GoogleAuthAttempt[]
   @@map("users")
+}
+model GoogleIdentity {
+  subject String @id @db.VarChar(255)
+  userId String @unique @map("user_id") @db.VarChar(191)
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  @@map("google_identities")
+}
+model GoogleAuthAttempt {
+  stateHash String @id @map("state_hash") @db.Char(64)
+  browserHash String @map("browser_hash") @db.Char(64)
+  nonce String @db.VarChar(128)
+  codeVerifier String @map("code_verifier") @db.VarChar(128)
+  returnTo String @map("return_to") @db.VarChar(2048)
+  mode String @db.VarChar(16)
+  linkUserId String? @map("link_user_id") @db.VarChar(191)
+  linkSessionHash String? @map("link_session_hash") @db.Char(64)
+  expiresAt DateTime @map("expires_at")
+  linkUser User? @relation(fields:[linkUserId],references:[id],onDelete:Cascade)
+  @@index([expiresAt])
+  @@index([linkUserId])
+  @@map("google_auth_attempts")
 }
 model Session {
   tokenHash String @id @map("token_hash") @db.Char(64)

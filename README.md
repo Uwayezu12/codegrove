@@ -59,6 +59,26 @@ TRUST_PROXY_HOPS=0
 
 URL-encode special characters in database passwords. The shadow URL must point to a separate, disposable database, never the application database. Development migrations may erase the shadow database.
 
+## Google sign-in setup
+
+1. In [Google Auth Platform](https://console.cloud.google.com/auth/overview), create/select a project. Configure Branding (CodeGrove name, support/contact emails, and your real production homepage/privacy URLs), Audience (External or your Workspace organization), and Data Access for `openid`, `email`, and `profile`. Add test users while the consent app is in Testing; publish/configure verification as required before public use.
+2. Create an OAuth client of type **Web application**. Put its real Client ID and Client Secret in server-side `.env` as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. Never prefix these with `VITE_` or commit them. No credentials are supplied by this project.
+3. Register the exact **Authorized redirect URI** for the origin used to open CodeGrove:
+
+   | Environment | Exact callback URI |
+   | --- | --- |
+   | Vite development (recommended) | `http://localhost:5173/api/auth/google/callback` |
+   | Vite via IP, if used | `http://127.0.0.1:5173/api/auth/google/callback` |
+   | Express serving a local build | `http://localhost:3001/api/auth/google/callback` |
+   | Production | `https://YOUR_REAL_HOST/api/auth/google/callback` |
+
+   The production hostname is deployment-specific: replace `YOUR_REAL_HOST` with your actual host, then register that exact URL. Set `GOOGLE_REDIRECT_URI` to the matching full URL and include its origin in `APP_ORIGINS`. Use the same origin to start and finish sign-in; do not mix localhost, IP, ports or subdomains. Vite proxies `/api` to Express. Production must serve frontend and `/api` on the same HTTPS origin. This server-side flow does not require an Authorized JavaScript Origin.
+4. Run `npm run prisma:generate` and `npm run db:deploy` to add the Google identity/attempt tables without altering existing account data. Restart Express after changing credentials. In production set `NODE_ENV=production` and configure `TRUST_PROXY_HOPS` for your actual reverse proxy.
+
+Google registration and sign-in share the authorization-code flow. `openid-client` validates Google tokens on the server with signature, issuer, audience, expiry and nonce checks; attempts use state, PKCE and a short-lived HTTP-only browser cookie backed by MySQL. Google subjects identify accounts. If an email already belongs to a local account, sign in with its password first, then explicitly choose **Link Google account** on `/signin`; the same authenticated session must finish linking. Email matching never links accounts automatically. Tokens are not stored or sent to the frontend. Cancelling returns to the original auth mode with a retry message and safe local destination.
+
+Without credentials, email/password authentication remains available and Google reports that configuration is required. See [Google's OpenID Connect setup](https://developers.google.com/identity/openid-connect/openid-connect) for consent and client configuration. After configuration, manually check consent, cancellation, first signup, repeat login, and linking with a Google test user; automated checks mock the provider and do not contact Google.
+
 ## Initialize the database
 
 ```sh

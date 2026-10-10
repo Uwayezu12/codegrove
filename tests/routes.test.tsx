@@ -31,13 +31,17 @@ test('auth navigation keeps distinct tabs and preserves safe learning return pat
    Object.defineProperty(globalThis,'location',{configurable:true,value:new URL('https://codegrove.test/'+mode+'?return_to=%2Ftutorial%2Farrays')});
    const html=renderToStaticMarkup(<AuthPage mode={mode} user={null}/>);
    const tabs=html.match(/<nav[^>]*aria-label="Authentication"[^>]*>(.*?)<\/nav>/)?.[1]||'';
-   assert.match(tabs,/>Sign In<\/a>/);
-   assert.match(tabs,/>Sign Up<\/a>/);
+   assert.match(tabs,/>Log in<\/a>/);
+   assert.match(tabs,mode==='register'?/>Create Account<\/a>/:/>Register Now<\/a>/);
    assert.match(tabs,/href="\/signin\?return_to=%2Ftutorial%2Farrays"/);
    assert.match(tabs,/href="\/register\?return_to=%2Ftutorial%2Farrays"/);
    assert.equal((tabs.match(/aria-current="page"/g)||[]).length,1);
    assert.match(html,/name="email"/);assert.match(html,/name="password"/);
    assert.equal(html.includes('name="name"'),mode==='register');
+   assert.equal((html.match(/class="auth-google"/g)||[]).length,1);
+   assert.match(html,/aria-label="Show password"/);
+   assert.match(html,/minLength="12"/);
+   assert.equal(html.indexOf('class="auth-google"')<html.indexOf('<form'),mode!=='register');
   }
   for(const unsafe of ['https://elsewhere.test/path','//elsewhere.test/path','/\\elsewhere.test','/signin','/register?return_to=/signin']){
    Object.defineProperty(globalThis,'location',{configurable:true,value:new URL('https://codegrove.test/signin?return_to='+encodeURIComponent(unsafe))});

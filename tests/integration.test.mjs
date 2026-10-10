@@ -38,6 +38,7 @@ const second=await request('/auth/register',{body:{name:'Second learner',email:`
 assert.equal((await request('/progress',{body:{kind:'bookmark',item:'js-variables',remove:true}})).status,200);assert.equal((await request('/progress')).body.records.length,4);
 const oldCookie=cookie;assert.equal((await request('/auth/logout',{body:{}})).status,200);assert.equal((await request('/progress',{session:oldCookie})).status,401);assert.equal((await request('/auth/login',{body:{email,password:password+'incorrect'},session:''})).status,401);
 const signed=await request('/auth/login',{body:{email,password},session:''});assert.equal(signed.status,200);cookie=signed.cookie;assert.equal((await request('/progress')).body.records.length,4);
+await (await import('./helpers/google-integration.mjs')).checkGoogleIntegration(prisma);
 await prisma.session.updateMany({where:{userId:stored.id},data:{expiresAt:new Date(0)}});assert.equal((await request('/progress')).status,401);
 // Import into this explicitly disposable test database, preserving all original columns.
 const snapshot=JSON.parse(readFileSync('migration/legacy-progress.json','utf8'));const legacyId=snapshot.rows[0]?.user_id;
