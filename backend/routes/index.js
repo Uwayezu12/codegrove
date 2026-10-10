@@ -6,6 +6,7 @@ import {list,save} from '../controllers/progress.js';
 import {catalog} from '../services/catalog.js';
 import {prisma} from '../config/prisma.js';
 import {google} from '../controllers/google.js';
+import {profile,updateProfile} from '../controllers/profile.js';
 const router=Router();
 const authLimit=rateLimit({windowMs:15*60*1000,limit:30,standardHeaders:'draft-8',legacyHeaders:false,message:{error:'Too many sign-in attempts. Please try again later.'}});
 router.get('/health',async(req,res)=>{await prisma.$queryRaw`SELECT 1`;res.json({status:'ok',database:'mysql'});});
@@ -17,6 +18,8 @@ router.post('/auth/google/link',authLimit,authenticate,requireUser,google.start)
 router.get('/auth/google/callback',authLimit,authenticate,google.callback);
 router.post('/auth/logout',logout);
 router.get('/auth/me',authenticate,me);
+router.get('/profile',authenticate,requireUser,profile);
+router.patch('/profile',authenticate,requireUser,updateProfile);
 router.get('/progress',authenticate,requireUser,list);
 router.post('/progress',authenticate,requireUser,save);
 export default router;

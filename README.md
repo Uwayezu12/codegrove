@@ -141,10 +141,16 @@ Use the original ID in `migration/legacy-progress.json`. Never infer ownership f
 | `POST /api/auth/login` | `{email,password}` → session |
 | `POST /api/auth/logout` | Revoke session and clear cookie; send `{}` |
 | `GET /api/auth/me` | Current public user or `null` |
+| `GET /api/profile` | Authenticated user's name, email, join date and sign-in methods |
+| `PATCH /api/profile` | `{name}` → update the authenticated user's display name |
 | `GET /api/progress` | Authenticated user's saved records |
 | `POST /api/progress` | `{kind,item,value?,remove?}` → updated records |
 
 Writes require `Content-Type: application/json` and an `Origin` in `APP_ORIGINS`. Progress kinds are `bookmark`, `complete`, `enroll`, `solved`, and `quiz`. The backend checks referenced content, validates input, and scopes access to the authenticated user. Client-supplied ChatGPT identity headers have no authority. Dashboard and course completion are derived from the same records as before.
+
+The shared header's avatar menu provides **My Profile** (`/profile`), **My Courses** (`/my-courses`), **Edit Profile** (`/profile/edit`), and **Logout**. My Courses reuses the My learning dashboard and its existing enrollment/completion records. Profile editing accepts only a display name of 1–100 characters; email, passwords, and Google identities cannot be changed through this endpoint. Both profile endpoints use the existing session middleware and write protections. Logout calls the existing POST endpoint and revokes the database session.
+
+Authentication cards use the available `references/gfg-login-current.png.png` and `references/gfg-register-current.png.png` as visual references only. Google is the only enabled social provider; Facebook, LinkedIn and GitHub are visibly disabled. Password recovery displays an availability explanation because this project has no reset backend. Profile avatars use initials because the current schema does not store images. No schema migration is needed for these account pages.
 
 Prisma models: `User`, `Session`, `LearningProgress`, `Topic`, `Lesson`, `Course`, `CourseLesson`, `Exercise`, `Quiz`. `LearningProgress` retains the original `(user_id, kind, item)` composite key. Topics/lessons/courses have explicit relations; `CourseLesson` preserves curriculum order. JSON fields retain original content shapes without rewriting lessons or exercises.
 
